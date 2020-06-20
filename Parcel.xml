@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan gate1[4], gate2[4], gate3[4], pass1, goback[4], pass2, pass3;
+int code[4], par = 1;
+broadcast chan pass4;
+
+
+</declaration>
+	<template>
+		<name>Plant1</name>
+		<parameter>int i</parameter>
+		<location id="id0" x="2210" y="714">
+			<name x="2176" y="680">destination</name>
+			<committed/>
+		</location>
+		<location id="id1" x="2108" y="714">
+			<name x="2098" y="680">gatetwo</name>
+		</location>
+		<location id="id2" x="2006" y="714">
+			<name x="1997" y="680">checkpoint2</name>
+		</location>
+		<location id="id3" x="1904" y="714">
+			<name x="1878" y="680">gateone</name>
+			<committed/>
+		</location>
+		<location id="id4" x="1768" y="714">
+			<name x="1751" y="680">Read</name>
+			<committed/>
+		</location>
+		<location id="id5" x="1666" y="714">
+			<name x="1632" y="680">Start</name>
+		</location>
+		<location id="id6" x="1836" y="714">
+			<name x="1793" y="680">checkpoint1</name>
+			<committed/>
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id3"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="2125" y="714">pass3!</label>
+			<label kind="assignment" x="2126" y="731">par--</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="select" x="1684" y="722">a : int[0,3]</label>
+			<label kind="synchronisation" x="1684" y="756">pass4!</label>
+			<label kind="assignment" x="1683" y="739">code[i] = a</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="1870" y="816">goback[i]!</label>
+			<nail x="2210" y="816"/>
+			<nail x="1666" y="816"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="2031" y="714">pass1!</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="1938" y="765">gate3[i]!</label>
+			<label kind="assignment" x="1938" y="748">par++</label>
+			<nail x="1955" y="748"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="1938" y="638">gate2[i]!</label>
+			<label kind="assignment" x="1938" y="655">par++</label>
+			<nail x="1955" y="680"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="1776" y="722">gate1[i]!</label>
+		</transition>
+	</template>
+	<template>
+		<name>Plant2</name>
+		<parameter>int i</parameter>
+		<location id="id7" x="-68" y="0">
+			<name x="-119" y="-34">checkpoint1</name>
+			<committed/>
+		</location>
+		<location id="id8" x="0" y="0">
+			<name x="-25" y="-34">gateone</name>
+			<committed/>
+		</location>
+		<location id="id9" x="306" y="0">
+			<name x="297" y="-34">destination</name>
+			<committed/>
+		</location>
+		<location id="id10" x="238" y="0">
+			<name x="228" y="-34">gatetwo</name>
+			<committed/>
+		</location>
+		<location id="id11" x="102" y="0">
+		</location>
+		<location id="id12" x="-136" y="0">
+			<name x="-178" y="8">Read</name>
+			<committed/>
+		</location>
+		<location id="id13" x="-238" y="0">
+			<name x="-272" y="-34">Start</name>
+		</location>
+		<location id="id14" x="170" y="0">
+			<name x="136" y="-34">checkpoint2</name>
+			<committed/>
+		</location>
+		<init ref="id13"/>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="178" y="8">pass3?</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id9"/>
+			<label kind="assignment" x="256" y="0">par--</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id12"/>
+			<label kind="select" x="-229" y="-51">a : int[0,3]</label>
+			<label kind="guard" x="-229" y="-34">par % 2 == 0</label>
+			<label kind="synchronisation" x="-229" y="-85">pass1?</label>
+			<label kind="assignment" x="-229" y="-68">code[i] = a</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-59" y="102">goback[i]!</label>
+			<nail x="306" y="102"/>
+			<nail x="-238" y="102"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="110" y="8">pass2!</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="34" y="51">gate3[i]!</label>
+			<label kind="assignment" x="34" y="34">par++</label>
+			<nail x="51" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="34" y="-76">gate2[i]!</label>
+			<label kind="assignment" x="34" y="-59">par++</label>
+			<nail x="51" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-127" y="8">gate1[i]!</label>
+		</transition>
+	</template>
+	<template>
+		<name>Plant3</name>
+		<parameter>int i</parameter>
+		<location id="id15" x="-102" y="0">
+			<name x="-144" y="-34">checkpoint1</name>
+			<committed/>
+		</location>
+		<location id="id16" x="-34" y="0">
+			<name x="-59" y="-34">gateone</name>
+			<committed/>
+		</location>
+		<location id="id17" x="272" y="0">
+			<name x="262" y="-34">destination</name>
+			<committed/>
+		</location>
+		<location id="id18" x="170" y="0">
+			<name x="160" y="-34">gatetwo</name>
+			<committed/>
+		</location>
+		<location id="id19" x="68" y="0">
+			<name x="59" y="-34">checkpoint2</name>
+		</location>
+		<location id="id20" x="-170" y="0">
+			<name x="-212" y="8">Read</name>
+			<committed/>
+		</location>
+		<location id="id21" x="-238" y="0">
+			<name x="-272" y="-34">Start</name>
+		</location>
+		<init ref="id21"/>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id17"/>
+			<label kind="assignment" x="204" y="0">par--</label>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id20"/>
+			<label kind="select" x="-229" y="-51">a : int[0,3]</label>
+			<label kind="guard" x="-229" y="-34">par == 3</label>
+			<label kind="synchronisation" x="-230" y="-85">pass2?</label>
+			<label kind="assignment" x="-230" y="-68">code[i] = a</label>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-68" y="102">goback[i]!</label>
+			<nail x="272" y="102"/>
+			<nail x="-238" y="102"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="93" y="0">pass4?</label>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="0" y="51">gate3[i]!</label>
+			<label kind="assignment" x="0" y="34">par++</label>
+			<nail x="17" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="0" y="-76">gate2[i]!</label>
+			<label kind="assignment" x="0" y="-59">par++</label>
+			<nail x="17" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="-161" y="8">gate1[i]!</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Gate</name>
+		<parameter>int i</parameter>
+		<declaration>// Place local declarations here.
+typedef int[10, 23] gate;
+const gate zeroone = 10;
+const gate twothree = 23;
+gate G1 = zeroone;
+
+typedef int[0, 1] gateL;
+const gateL zero = 0;
+const gateL one = 1;
+gateL G2 = one;
+
+typedef int[2, 3] gateR;
+const gateR two = 2;
+const gateR three = 3;
+gateR G3 = two;
+
+</declaration>
+		<location id="id22" x="578" y="136">
+			<name x="595" y="119">gate2update</name>
+		</location>
+		<location id="id23" x="408" y="136">
+			<name x="314" y="119">gate1update</name>
+		</location>
+		<location id="id24" x="238" y="136">
+		</location>
+		<init ref="id24"/>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id22"/>
+			<label kind="guard" x="459" y="221">code[i] == 3</label>
+			<label kind="synchronisation" x="459" y="238">gate3[i]?</label>
+			<label kind="assignment" x="459" y="255">G3 = three</label>
+			<nail x="442" y="221"/>
+			<nail x="544" y="221"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id22"/>
+			<label kind="guard" x="459" y="85">code[i] == 1</label>
+			<label kind="synchronisation" x="459" y="102">gate2[i]?</label>
+			<label kind="assignment" x="459" y="119">G2 = one</label>
+			<nail x="450" y="85"/>
+			<nail x="535" y="85"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id23"/>
+			<label kind="guard" x="289" y="204">code[i] &gt;= 2</label>
+			<label kind="synchronisation" x="289" y="221">gate1[i]?</label>
+			<label kind="assignment" x="289" y="238">G1 = twothree</label>
+			<nail x="272" y="204"/>
+			<nail x="374" y="204"/>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="374" y="306">goback[i]?</label>
+			<nail x="544" y="306"/>
+			<nail x="272" y="306"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id22"/>
+			<label kind="guard" x="459" y="144">code[i] == 2</label>
+			<label kind="synchronisation" x="458" y="161">gate3[i]?</label>
+			<label kind="assignment" x="459" y="178">G3 = two</label>
+			<nail x="442" y="204"/>
+			<nail x="544" y="204"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id22"/>
+			<label kind="guard" x="459" y="8">code[i] == 0</label>
+			<label kind="synchronisation" x="459" y="25">gate2[i]?</label>
+			<label kind="assignment" x="459" y="42">G2 = zero</label>
+			<nail x="442" y="68"/>
+			<nail x="544" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id23"/>
+			<label kind="guard" x="290" y="25">code[i] &lt; 2</label>
+			<label kind="synchronisation" x="289" y="8">gate1[i]?</label>
+			<label kind="assignment" x="289" y="42">G1 = zeroone</label>
+			<nail x="272" y="68"/>
+			<nail x="374" y="68"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+p1 = Plant1(1);
+p2 = Plant2(2);
+p3 = Plant3(3);
+
+g1 = Gate(1);
+g2 = Gate(2);
+g3 = Gate(3);
+
+// List one or more processes to be composed into a system.
+system p1, p2, p3, g1, g2, g3;
+    </system>
+	<queries>
+		<query>
+			<formula>A[] (p1.checkpoint2 imply g1.gate2update) &amp;&amp; (p2.checkpoint2 imply g2.gate2update) &amp;&amp; (p3.checkpoint2 imply g3.gate2update)</formula>
+			<comment> This is to make sure that the switch (Gate 2 and Gate 3) is at the correct position before any parcel is at checkpoint 2</comment>
+		</query>
+		<query>
+			<formula>A[] (p1.checkpoint1 imply (g1.G1 == 10 imply code[1] &lt; 2)) &amp;&amp; (p2.checkpoint1 imply (g2.G1 == 10 imply code[2] &lt; 2)) &amp;&amp; (p3.checkpoint1 imply (g3.G1 == 10 imply code[3] &lt; 2))</formula>
+			<comment>This is to make sure that the switch (Gate 1) is open for zeroone before any parcel is at checkpoint 1</comment>
+		</query>
+		<query>
+			<formula>A[] (p1.checkpoint1 imply (g1.G1 == 23 imply code[1] &gt;= 2)) &amp;&amp; (p2.checkpoint1 imply (g2.G1 == 23 imply code[2] &gt;= 2)) &amp;&amp; (p3.checkpoint1 imply (g3.G1 == 23 imply code[3] &gt;= 2))</formula>
+			<comment>This is to make sure that the switch (Gate 1) is open for twothree before any parcel is at checkpoint 1</comment>
+		</query>
+		<query>
+			<formula>A[] par &lt;= 4</formula>
+			<comment>The model only allows 4 parcel in the system at the same time</comment>
+		</query>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

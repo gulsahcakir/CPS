@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+int count = 0, M = 4; //number of passengers and the limit
+
+chan passenger, depart;
+</declaration>
+	<template>
+		<name x="5" y="5">Control</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="0" y="0">
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-136" y="-51">count==M</label>
+			<label kind="synchronisation" x="-136" y="-34">depart?</label>
+			<label kind="assignment" x="-136" y="-17">count:=0</label>
+			<nail x="-68" y="-34"/>
+			<nail x="-68" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="76" y="-51">count&lt;M</label>
+			<label kind="synchronisation" x="76" y="-34">passenger?</label>
+			<label kind="assignment" x="76" y="-17">count++</label>
+			<nail x="68" y="34"/>
+			<nail x="68" y="-34"/>
+		</transition>
+	</template>
+	<template>
+		<name>Turnstile</name>
+		<location id="id1" x="0" y="0">
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="76" y="-34">passenger!</label>
+			<nail x="68" y="0"/>
+			<nail x="68" y="-34"/>
+		</transition>
+	</template>
+	<template>
+		<name>Car</name>
+		<location id="id2" x="0" y="0">
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="76" y="-34">depart!</label>
+			<nail x="68" y="0"/>
+			<nail x="68" y="-34"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+Ctrl = Control();
+T = Turnstile();
+car = Car();
+// List one or more processes to be composed into a system.
+system Ctrl, T, car;
+    </system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

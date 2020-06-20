@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+const int N = 3, limit = 5; // Deciding variables
+int cars[N+1], crashlane; // Number of cars on each lane
+bool alert;
+clock t[N+1], ct;
+broadcast chan add, remove, shiftL, shiftR, resolve, crash;
+
+// You can prioritize channels only between two templates.
+//chan priority   &lt; ;
+
+
+// This function shifts a car from one lane to another
+void shift(int &amp;from, int &amp;to)
+{
+  from = from - 1;
+  to = to + 1;
+}
+
+//This function checks if the clocks are below 10
+int check()
+{    
+    int i;
+    for(i = 0; i &lt;= 3; i++)
+    {
+        if (cars[i] &gt; 10)
+        {return false;}
+    }
+return true;
+}
+</declaration>
+	<template>
+		<name x="5" y="5">Controller</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="1054" y="1054">
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="1130" y="1071">crash?</label>
+			<nail x="1122" y="1071"/>
+			<nail x="1122" y="1088"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="1130" y="1020">resolve?</label>
+			<nail x="1122" y="1037"/>
+			<nail x="1122" y="1020"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="935" y="1020">shiftR?</label>
+			<nail x="986" y="1037"/>
+			<nail x="986" y="1020"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="935" y="1071">shiftL?</label>
+			<nail x="986" y="1071"/>
+			<nail x="986" y="1088"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="1045" y="1130">add?</label>
+			<nail x="1071" y="1122"/>
+			<nail x="1037" y="1122"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="1037" y="960">remove?</label>
+			<nail x="1071" y="986"/>
+			<nail x="1037" y="986"/>
+		</transition>
+	</template>
+	<template>
+		<name>crashGenerator</name>
+		<location id="id1" x="0" y="34">
+			<name x="0" y="0">Crash</name>
+			<label kind="invariant" x="-10" y="51">ct &lt;= 20</label>
+			<label kind="exponentialrate" x="25" y="25">1</label>
+		</location>
+		<location id="id2" x="-144" y="34">
+			<name x="-221" y="0">no_crash</name>
+			<label kind="exponentialrate" x="-153" y="51">1</label>
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-119" y="76">cars[0] == 0 &amp;&amp; ct &gt;= 20</label>
+			<label kind="synchronisation" x="-119" y="127">resolve!</label>
+			<label kind="assignment" x="-119" y="93">alert = false,
+ct = 0, crashlane = 0</label>
+			<nail x="-42" y="68"/>
+			<nail x="-110" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="select" x="-119" y="-76">m: int[0,N]</label>
+			<label kind="guard" x="-119" y="-59">alert == false &amp;&amp; cars[m] &gt; 0</label>
+			<label kind="synchronisation" x="-119" y="-42">crash!</label>
+			<label kind="assignment" x="-119" y="-25">crashlane = m, alert = true</label>
+			<nail x="-110" y="0"/>
+			<nail x="-42" y="0"/>
+		</transition>
+	</template>
+	<template>
+		<name>Lane</name>
+		<parameter>int [0,N] i</parameter>
+		<location id="id3" x="748" y="714">
+		</location>
+		<init ref="id3"/>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="guard" x="875" y="714">i == 0 &amp;&amp; cars[i] &gt; 0 &amp;&amp; cars[i+1] &lt; limit &amp;&amp;
+alert == true</label>
+			<label kind="synchronisation" x="875" y="697">shiftR!</label>
+			<label kind="assignment" x="875" y="748">shift(cars[i],cars[i+1])</label>
+			<nail x="850" y="731"/>
+			<nail x="850" y="748"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="guard" x="722" y="824">cars[i] &lt; limit &amp;&amp; alert == false</label>
+			<label kind="synchronisation" x="722" y="858">add!</label>
+			<label kind="assignment" x="722" y="841">cars[i]++</label>
+			<label kind="comments" x="688" y="790">Add</label>
+			<nail x="731" y="816"/>
+			<nail x="765" y="816"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="guard" x="416" y="697">i &gt; 0 &amp;&amp; cars[i] &gt; 0 &amp;&amp; 
+cars[i-1] &lt; limit &amp;&amp;  alert == false</label>
+			<label kind="synchronisation" x="416" y="679">shiftL!</label>
+			<label kind="assignment" x="416" y="731">shift(cars[i],cars[i-1])</label>
+			<label kind="comments" x="629" y="654">shift left</label>
+			<nail x="646" y="697"/>
+			<nail x="646" y="731"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="guard" x="875" y="621">i &lt; N &amp;&amp; cars[i] &gt; 0 &amp;&amp; cars[i+1] &lt; limit &amp;&amp;
+alert == false</label>
+			<label kind="synchronisation" x="875" y="603">shiftR!</label>
+			<label kind="assignment" x="875" y="654">shift(cars[i],cars[i+1])</label>
+			<label kind="comments" x="799" y="654">shift right</label>
+			<nail x="850" y="680"/>
+			<nail x="850" y="697"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="guard" x="646" y="535">cars[i] &gt; 0 &amp;&amp; (alert == false ||
+(alert == true &amp;&amp; i == 0 &amp;&amp; cars[1] == limit))</label>
+			<label kind="synchronisation" x="646" y="518">remove!</label>
+			<label kind="assignment" x="646" y="569">cars[i]--, t[i] = 0</label>
+			<label kind="comments" x="663" y="603">Remove</label>
+			<nail x="765" y="612"/>
+			<nail x="731" y="612"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+// List one or more processes to be composed into a system.
+
+//system carGenerator, crashGenerator, extractor, Shifting;
+system Lane, crashGenerator, Controller;</system>
+	<queries>
+		<query>
+			<formula>simulate [&lt;= 50] {t[1]}</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

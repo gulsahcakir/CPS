@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+chan open, close, depart, enter;
+const int max=5;
+int n=0;</declaration>
+	<template>
+		<name x="5" y="5">East</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="0" y="0">
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="0" y="-68">enter!</label>
+			<nail x="0" y="-51"/>
+			<nail x="25" y="-42"/>
+		</transition>
+	</template>
+	<template>
+		<name>West</name>
+		<location id="id1" x="0" y="0">
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="0" y="-76">depart!</label>
+			<nail x="0" y="-51"/>
+			<nail x="34" y="-42"/>
+		</transition>
+	</template>
+	<template>
+		<name>Director</name>
+		<location id="id2" x="-170" y="-68">
+		</location>
+		<location id="id3" x="-34" y="-68">
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-119" y="-59">close!</label>
+			<nail x="-68" y="-34"/>
+			<nail x="-136" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-119" y="-102">open!</label>
+			<nail x="-136" y="-102"/>
+			<nail x="-68" y="-102"/>
+		</transition>
+	</template>
+	<template>
+		<name>Controller</name>
+		<location id="id4" x="-204" y="-102" color="#ffc0cb">
+			<name x="-263" y="-110">closed</name>
+		</location>
+		<location id="id5" x="-34" y="-102">
+			<name x="-17" y="-110">opened</name>
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-34" y="-17">n&gt;0</label>
+			<label kind="synchronisation" x="-34" y="-34">depart?</label>
+			<label kind="assignment" x="-34" y="0">n--</label>
+			<nail x="0" y="-42"/>
+			<nail x="-34" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-34" y="-212">n&lt;max</label>
+			<label kind="synchronisation" x="-34" y="-229">enter?</label>
+			<label kind="assignment" x="-34" y="-195">n++</label>
+			<nail x="-34" y="-170"/>
+			<nail x="0" y="-161"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="guard" x="-136" y="-59">n==0</label>
+			<label kind="synchronisation" x="-136" y="-42">close?</label>
+			<nail x="-68" y="-68"/>
+			<nail x="-170" y="-68"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-144" y="-161">open?</label>
+			<nail x="-170" y="-136"/>
+			<nail x="-68" y="-136"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+// List one or more processes to be composed into a system.
+system East, West, Director, Controller;
+    </system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

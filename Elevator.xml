@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+const int N = 5;
+int level=1;
+
+typedef int[-1, 1] direction;
+const direction UP = 1;
+const direction DOWN = -1;
+direction dir = UP;
+
+bool request[N+1];
+int goto;
+chan fdstop[N+1],fustop[N+1], fstatus, estatus, up, down;
+broadcast chan estop, decide;
+
+typedef int[0, 1] status;
+const status ON = 1;
+const status OFF = 0;
+status eb_status[N+1], fbu_status[N+1], fbd_status[N+1];
+
+// This function checks if the request array has all true elements
+int goup()
+{
+    int i;
+    for (i = 5; i &gt; level; i--)
+        {
+        if (request[i] == true)
+        {return true;}
+        }
+return false;
+}
+
+int godown()
+{
+    int i;
+    for (i = 1; i &lt; level; i++)
+        {
+        if (request[i] == true)
+        {return true;}
+        }
+return false;
+}</declaration>
+	<template>
+		<name x="5" y="5">floorButton</name>
+		<parameter>int [1, N]  i</parameter>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="714" y="408">
+			<name x="629" y="391">D_pressed</name>
+		</location>
+		<location id="id1" x="782" y="374" color="#a9a9a9">
+			<committed/>
+		</location>
+		<location id="id2" x="1190" y="408">
+			<name x="1207" y="391">U_pressed</name>
+		</location>
+		<location id="id3" x="1122" y="374" color="#a9a9a9">
+			<committed/>
+		</location>
+		<location id="id4" x="952" y="408" color="#ffc0cb">
+			<name x="918" y="442">Unpressed</name>
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="765" y="459">fdstop[i]?</label>
+			<label kind="assignment" x="765" y="476">fbd_status[i] = OFF</label>
+			<nail x="748" y="442"/>
+			<nail x="918" y="442"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="663" y="349">request[i] = true</label>
+			<nail x="757" y="374"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id1"/>
+			<label kind="guard" x="808" y="323">i &gt; 1</label>
+			<label kind="assignment" x="808" y="340">fbd_status[i] = ON</label>
+			<nail x="918" y="374"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="1020" y="459">fustop[i]?</label>
+			<label kind="assignment" x="1020" y="476">fbu_status[i] = OFF</label>
+			<nail x="1156" y="442"/>
+			<nail x="986" y="442"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="assignment" x="1147" y="349">request[i] = true</label>
+			<nail x="1147" y="374"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="guard" x="986" y="323">i &lt; N</label>
+			<label kind="assignment" x="986" y="340">fbu_status[i] = ON</label>
+			<nail x="986" y="374"/>
+		</transition>
+	</template>
+	<template>
+		<name>elevatorButton</name>
+		<location id="id5" x="204" y="0" color="#ffc0cb">
+			<name x="195" y="17">pressed</name>
+		</location>
+		<location id="id6" x="136" y="-34" color="#a9a9a9">
+			<committed/>
+		</location>
+		<location id="id7" x="0" y="0" color="#ffc0cb">
+			<name x="-59" y="17">Unpressed</name>
+		</location>
+		<location id="id8" x="306" y="25" color="#a9a9a9">
+			<committed/>
+		</location>
+		<init ref="id7"/>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-255" y="-25">eb_status[level] == true</label>
+			<label kind="synchronisation" x="-255" y="-8">estop?</label>
+			<label kind="assignment" x="-255" y="8">eb_status[level] = OFF</label>
+			<nail x="-102" y="-17"/>
+			<nail x="-102" y="25"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="221" y="42">request[goto] = true</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id8"/>
+			<label kind="select" x="323" y="-17">m: int[1,N]</label>
+			<label kind="assignment" x="323" y="0">goto = m, eb_status[goto] = ON</label>
+			<nail x="306" y="-17"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id7"/>
+			<label kind="guard" x="42" y="42">eb_status[level] == true</label>
+			<label kind="synchronisation" x="42" y="59">estop?</label>
+			<label kind="assignment" x="42" y="76">eb_status[level] = OFF</label>
+			<nail x="170" y="34"/>
+			<nail x="34" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="178" y="-51">request[goto] = true</label>
+			<nail x="170" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="select" x="-68" y="-85">m: int[1,N]</label>
+			<label kind="assignment" x="-68" y="-68">goto = m, eb_status[goto] = ON</label>
+			<nail x="34" y="-34"/>
+		</transition>
+	</template>
+	<template>
+		<name>server</name>
+		<location id="id9" x="-136" y="0" color="#ffc0cb">
+		</location>
+		<init ref="id9"/>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-391" y="-25">goup() &amp;&amp; godown() == false</label>
+			<label kind="synchronisation" x="-263" y="-8">decide?</label>
+			<label kind="assignment" x="-272" y="8">dir = UP</label>
+			<nail x="-205" y="-17"/>
+			<nail x="-205" y="17"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-51" y="-26">godown() &amp;&amp; goup() == false</label>
+			<label kind="synchronisation" x="-51" y="-9">decide?</label>
+			<label kind="assignment" x="-51" y="8">dir = DOWN</label>
+			<nail x="-68" y="-17"/>
+			<nail x="-68" y="17"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-221" y="59">level &lt;= 2</label>
+			<label kind="synchronisation" x="-221" y="42">down!</label>
+			<label kind="assignment" x="-221" y="76">dir = UP</label>
+			<nail x="-153" y="34"/>
+			<nail x="-204" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-221" y="-76">level &gt;= N - 1</label>
+			<label kind="synchronisation" x="-221" y="-93">up!</label>
+			<label kind="assignment" x="-221" y="-59">dir = DOWN</label>
+			<nail x="-153" y="-34"/>
+			<nail x="-204" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-85" y="59">level &gt; 2 &amp;&amp; godown()</label>
+			<label kind="synchronisation" x="-85" y="42">down!</label>
+			<label kind="assignment" x="-85" y="76">dir = DOWN</label>
+			<nail x="-60" y="34"/>
+			<nail x="-102" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-85" y="-76">level &lt; (N - 1) &amp;&amp; goup()</label>
+			<label kind="synchronisation" x="-85" y="-93">up!</label>
+			<label kind="assignment" x="-85" y="-59">dir = UP</label>
+			<nail x="-102" y="-34"/>
+			<nail x="-60" y="-34"/>
+		</transition>
+	</template>
+	<template>
+		<name>Controller</name>
+		<location id="id10" x="306" y="0">
+		</location>
+		<location id="id11" x="-646" y="0">
+		</location>
+		<location id="id12" x="-102" y="0" color="#ffc0cb">
+		</location>
+		<location id="id13" x="-238" y="0" color="#ffc0cb">
+		</location>
+		<location id="id14" x="272" y="-68" color="#a9a9a9">
+			<committed/>
+		</location>
+		<location id="id15" x="272" y="68" color="#a9a9a9">
+			<committed/>
+		</location>
+		<location id="id16" x="-612" y="-68" color="#a9a9a9">
+			<committed/>
+		</location>
+		<location id="id17" x="-612" y="68" color="#a9a9a9">
+			<committed/>
+		</location>
+		<init ref="id13"/>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-807" y="-59">request[level] == true &amp;&amp; 
+dir == UP</label>
+			<label kind="synchronisation" x="-807" y="-25">fustop[level]!</label>
+			<nail x="-646" y="-42"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-807" y="17">request[level] == true &amp;&amp;
+dir == DOWN</label>
+			<label kind="synchronisation" x="-807" y="51">fdstop[level]!</label>
+			<nail x="-646" y="42"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id17"/>
+			<label kind="guard" x="-612" y="136">eb_status[level] == true &amp;&amp; dir == DOWN</label>
+			<label kind="synchronisation" x="-612" y="153">estop!</label>
+			<nail x="-374" y="136"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-612" y="-161">eb_status[level] == true &amp;&amp; dir == UP</label>
+			<label kind="synchronisation" x="-612" y="-144">estop!</label>
+			<nail x="-374" y="-136"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id10"/>
+			<label kind="guard" x="314" y="-76">request[level] == true &amp;&amp; 
+dir == UP</label>
+			<label kind="synchronisation" x="314" y="-42">fustop[level]!</label>
+			<nail x="306" y="-51"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id10"/>
+			<label kind="guard" x="314" y="8">request[level] == true &amp;&amp;
+dir == DOWN</label>
+			<label kind="synchronisation" x="314" y="42">fdstop[level]!</label>
+			<nail x="306" y="43"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id15"/>
+			<label kind="guard" x="136" y="110">eb_status[level] == true &amp;&amp; dir == DOWN</label>
+			<label kind="synchronisation" x="136" y="127">estop!</label>
+			<nail x="34" y="136"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id14"/>
+			<label kind="guard" x="136" y="-161">eb_status[level] == true &amp;&amp; dir == UP</label>
+			<label kind="synchronisation" x="136" y="-144">estop!</label>
+			<nail x="34" y="-136"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-620" y="17">estop!</label>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-620" y="-42">estop!</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="238" y="-51">estop!</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="238" y="25">estop!</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id14"/>
+			<label kind="guard" x="8" y="-93">request[level] == true &amp;&amp;
+dir == UP</label>
+			<label kind="synchronisation" x="8" y="-59">fustop[level]!</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-493" y="-102">request[level] == true &amp;&amp;
+dir == UP</label>
+			<label kind="synchronisation" x="-493" y="-68">fustop[level]!</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="102" y="0">decide!</label>
+			<label kind="assignment" x="102" y="-25">request[level] = false</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id15"/>
+			<label kind="guard" x="8" y="51">request[level] == true &amp;&amp;
+dir == DOWN</label>
+			<label kind="synchronisation" x="8" y="85">fdstop[level]!</label>
+			<nail x="68" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-544" y="0">decide!</label>
+			<label kind="assignment" x="-544" y="-25">request[level] = false</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id17"/>
+			<label kind="guard" x="-493" y="42">request[level] == true &amp;&amp;
+dir == DOWN</label>
+			<label kind="synchronisation" x="-493" y="76">fdstop[level]!</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id13"/>
+			<label kind="guard" x="-654" y="212">fbd_status[level] == false &amp;&amp; eb_status[level] == false &amp;&amp; 
+level &gt; 1 &amp;&amp; godown() &amp;&amp; dir == DOWN</label>
+			<label kind="synchronisation" x="-348" y="195">down?</label>
+			<label kind="assignment" x="-348" y="178">level--</label>
+			<nail x="-306" y="170"/>
+			<nail x="-340" y="170"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-26" y="-212">fbu_status[level] == false &amp;&amp; eb_status[level] == false &amp;&amp; 
+level &lt; N &amp;&amp; goup() &amp;&amp; dir == UP</label>
+			<label kind="synchronisation" x="-26" y="-229">up?</label>
+			<label kind="assignment" x="-26" y="-246">level++</label>
+			<nail x="0" y="-170"/>
+			<nail x="-34" y="-170"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="guard" x="-229" y="85">request[level] == false &amp;&amp; 
+level &gt; 1 &amp;&amp; godown() &amp;&amp;
+dir == DOWN</label>
+			<label kind="synchronisation" x="-229" y="68">down?</label>
+			<label kind="assignment" x="-229" y="51">level--</label>
+			<nail x="-170" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-229" y="-127">request[level] == false &amp;&amp; 
+level &lt; N &amp;&amp; goup() &amp;&amp; 
+dir == UP</label>
+			<label kind="synchronisation" x="-229" y="-144">up?</label>
+			<label kind="assignment" x="-229" y="-161">level++</label>
+			<nail x="-170" y="-68"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+// List one or more processes to be composed into a system.
+
+system floorButton, elevatorButton, server, Controller;</system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

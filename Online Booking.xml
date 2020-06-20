@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+const int max_seats = 5; // maximum seats
+int booked_seats = 0; // booked seats 
+int available_seats = max_seats;    // available seats
+
+chan available, aquire[max_seats+1], aquired[max_seats+1];  </declaration>
+	<template>
+		<name>Browser</name>
+		<declaration>int number;
+
+int seat;</declaration>
+		<location id="id0" x="2516" y="1700">
+		</location>
+		<location id="id1" x="2754" y="1700">
+			<committed/>
+		</location>
+		<location id="id2" x="2924" y="1700">
+			<committed/>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="2558" y="1700">number &gt; available_seats</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="2558" y="1734">available_seats == 0</label>
+			<nail x="2720" y="1734"/>
+			<nail x="2550" y="1734"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="2796" y="1700">aquired[seat]!</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="2796" y="1734">aquire[seat]!</label>
+			<label kind="assignment" x="2796" y="1751">number--</label>
+			<nail x="2898" y="1734"/>
+			<nail x="2779" y="1734"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="select" x="2796" y="1623">x: int[1,max_seats]</label>
+			<label kind="guard" x="2796" y="1589">number &gt; 0 &amp; available_seats &gt; 0 
+&amp; number &lt;= available_seats</label>
+			<label kind="assignment" x="2795" y="1640">seat = x</label>
+			<nail x="2779" y="1666"/>
+			<nail x="2898" y="1666"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="select" x="2558" y="1623">x : int[1, max_seats]</label>
+			<label kind="assignment" x="2558" y="1640">number = x</label>
+			<nail x="2550" y="1666"/>
+			<nail x="2728" y="1666"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="2558" y="1768">number == 0</label>
+			<nail x="2728" y="1768"/>
+			<nail x="2550" y="1768"/>
+		</transition>
+	</template>
+	<template>
+		<name>Seats</name>
+		<parameter>int i</parameter>
+		<location id="id3" x="17" y="0">
+			<name x="17" y="-34">reserved</name>
+		</location>
+		<location id="id4" x="-102" y="0">
+			<name x="-136" y="-34">free</name>
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="59" y="17">aquired[i]?</label>
+			<nail x="51" y="0"/>
+			<nail x="51" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-85" y="-93">aquire[i]?</label>
+			<label kind="assignment" x="-85" y="-76">available_seats--,
+booked_seats = max_seats - available_seats</label>
+			<nail x="-85" y="-34"/>
+			<nail x="-17" y="-34"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+B1 = Browser();
+B2 = Browser();
+
+s1 = Seats(1);
+s2 = Seats(2);
+s3 = Seats(3);
+s4 = Seats(4);
+s5 = Seats(5);
+
+// List one or more processes to be composed into a system.
+system B1, B2, s1, s2, s3, s4, s5;
+</system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] T.final imply T.count_n == n
+</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

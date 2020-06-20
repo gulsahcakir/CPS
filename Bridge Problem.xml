@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+const int d = 50; // maximum number of cars on the island-bridge compound
+
+int n = 0;       // actual number of cars
+
+int a = 0;       // number of cars on bridge going to island
+int b = 0;       // number of cars on the island
+int c = 0;       // number of cars on bridge going to mainland
+bool il_tl, ml_tl= true;
+bool s1=true, s2,s3,s4;
+
+broadcast chan IL_out, IL_in, ML_out, ML_in;
+</declaration>
+	<template>
+		<name x="5" y="5">Control</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id0" x="178" y="170">
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="153" y="246">b &gt; 0 &amp;&amp; s3 == false &amp;&amp; a == 0</label>
+			<label kind="assignment" x="153" y="263">s3 = true, il_tl = true, ml_tl = false</label>
+			<nail x="144" y="238"/>
+			<nail x="212" y="238"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="153" y="60">s1 == false</label>
+			<label kind="assignment" x="153" y="77">s1=true</label>
+			<nail x="212" y="102"/>
+			<nail x="144" y="102"/>
+		</transition>
+	</template>
+	<template>
+		<name>Plant</name>
+		<location id="id1" x="-306" y="-646">
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-289" y="-553">0 &lt; a &amp;&amp; c==0 &amp;&amp; s2==true &amp;&amp; a&gt;1</label>
+			<label kind="synchronisation" x="-289" y="-570">IL_in!</label>
+			<label kind="assignment" x="-289" y="-536">a := a - 1, b := b + 1</label>
+			<nail x="-289" y="-578"/>
+			<nail x="-272" y="-578"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-484" y="-629">a+b==d &amp;&amp; a&gt;0</label>
+			<label kind="assignment" x="-450" y="-612">ml_tl=false</label>
+			<nail x="-374" y="-629"/>
+			<nail x="-374" y="-612"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-603" y="-756">b==1 &amp;&amp; a == 0 &amp;&amp; il_tl==true &amp;&amp; s3 == true</label>
+			<label kind="synchronisation" x="-374" y="-773">IL_out!</label>
+			<label kind="assignment" x="-603" y="-739">b:=b-1, c:=c+1, il_tl:=false, s3=false, s4=true</label>
+			<nail x="-323" y="-714"/>
+			<nail x="-340" y="-714"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-553" y="-553">0 &lt; a &amp;&amp; c==0 &amp;&amp; s2==true &amp;&amp; a==1</label>
+			<label kind="synchronisation" x="-357" y="-570">IL_in!</label>
+			<label kind="assignment" x="-510" y="-535">a := a - 1, b := b + 1, s2=false</label>
+			<nail x="-340" y="-578"/>
+			<nail x="-323" y="-578"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-289" y="-756">b&gt;1 &amp;&amp; a == 0 &amp;&amp; il_tl==true &amp;&amp; s3 == true</label>
+			<label kind="synchronisation" x="-289" y="-773">IL_out!</label>
+			<label kind="assignment" x="-289" y="-739">b := b - 1, c := c + 1, s3=false, s4=true</label>
+			<nail x="-272" y="-714"/>
+			<nail x="-289" y="-714"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-230" y="-688">s4==true &amp;&amp; c==1 &amp;&amp; b==0 &amp;&amp; 0 &lt; n</label>
+			<label kind="synchronisation" x="-230" y="-705">ML_in!</label>
+			<label kind="assignment" x="-230" y="-671">c := c - 1, s4=false, ml_tl:=true, il_tl:=false, n := n - 1</label>
+			<nail x="-238" y="-663"/>
+			<nail x="-238" y="-680"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-756" y="-688">a + b &lt; d-1  &amp;&amp; c == 0 &amp;&amp; s1==true &amp;&amp; ml_tl==true &amp;&amp; n &lt; d</label>
+			<label kind="synchronisation" x="-433" y="-705">ML_out!</label>
+			<label kind="assignment" x="-620" y="-671">a := a + 1, s1=false, s2=true, n := n + 1</label>
+			<nail x="-374" y="-680"/>
+			<nail x="-374" y="-663"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-230" y="-621">s4==true &amp;&amp; c&gt;1 &amp;&amp; 0 &lt; n</label>
+			<label kind="synchronisation" x="-230" y="-638">ML_in!</label>
+			<label kind="assignment" x="-230" y="-604">c := c - 1, n := n - 1</label>
+			<nail x="-238" y="-612"/>
+			<nail x="-238" y="-629"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+
+// List one or more processes to be composed into a system.
+system Control, Plant;
+
+</system>
+	<queries>
+		<query>
+			<formula>A[] (a &gt; 0 imply c == 0) &amp;&amp; (c &gt; 0 imply a == 0) //Continuous traffic flow on the bridge</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] a+b+c &lt;= d //total cars are within the limit</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] s4==true imply c&gt;0 //sensor check</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] s3==true imply b&gt;0 //sensor check</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] s2==true imply a&gt;0 // sensor check</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] (ml_tl==true imply c==0) &amp;&amp; (il_tl==true imply a==0) //either of the traffic light is 'Green'</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] ml_tl ==true imply a+b&lt;d &amp;&amp; c==0 // making sure cars flow towards Island when there's no car towards ML</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] a==0 | c==0 // One way traffic on the bridge</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] a + b + c == n // No car is lost</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] c &gt;= 0 // natural number check</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] b &gt;= 0 // natural number check</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] a &gt;= 0 // natural number check</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] n &lt;= d // natural number check</formula>
+			<comment>inv0_2</comment>
+		</query>
+		<query>
+			<formula>A[] n &gt;= 0 // natural number check
+</formula>
+			<comment>inv0_1</comment>
+		</query>
+	</queries>
+</nta>
